@@ -1,5 +1,6 @@
 <template>
-  <div style="height: 330px;">
+  <div style="margin-bottom: 20px">
+    {{ setTracks() }}
     <h2>TOP 10 SINGLES CHART IN US</h2>
     <a-row type="flex" justify="space-around" align="middle" style="padding: 0 40px">
       <!-- Top 10 Charts in US -->
@@ -18,10 +19,12 @@
               </div>
             </template>
             <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(item,i) in 10" :key="i">
-                <router-link :to="'/lyrics/'+ getTopTracks[i].trackID">
-                                    <a-card hoverable style="width: 300px">
+              <router-link
+                :to="{name: 'lyrics', params: {track_id: getTopTracks[i].trackID}, query: {trackName: getTopTracks[i].trackName, artistName: getTopTracks[i].artistName}}"
+              >
+                <a-card hoverable style="width: 300px">
                   <img alt="example" src="../assets/card-img.png" slot="cover">
-                  <div class="genre">Genre</div>
+                  <div class="genre">{{getTopTracks[i].genre}}</div>
                   <a-card-meta
                     :title="getTopTracks[i].trackName"
                     :description="getTopTracks[i].artistName"
@@ -32,7 +35,7 @@
                     >{{getTopTracks[i].artistName.charAt(0)}}</a-avatar>
                   </a-card-meta>
                 </a-card>
-                </router-link>
+              </router-link>
             </a-col>
             <template slot="next">
               <div class="next">
@@ -41,18 +44,38 @@
             </template>
           </app-carousel>
         </a-row>
+        <a-row v-if="tracks.length != 0">
+          <h2>Search Results</h2>
+            <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(item,i) in 12" :key="i">
+              <router-link
+                :to="{name: 'lyrics', params: {track_id: getSearchTracks[i].trackID}, query: {trackName: getSearchTracks[i].trackName, artistName: getSearchTracks[i].artistName}}"
+              >
+                <a-card hoverable style="width: 300px; margin-bottom: 15px">
+                  <img alt="example" src="../assets/card-img.png" slot="cover">
+                  <div class="genre">{{getSearchTracks[i].genre}}</div>
+                  <a-card-meta
+                    :title="getSearchTracks[i].trackName"
+                    :description="getSearchTracks[i].artistName.substring(0,25)"
+                  >
+                    <a-avatar
+                      slot="avatar"
+                      style="color: #f56a00; backgroundColor: #fde3cf"
+                    >{{getSearchTracks[i].artistName.charAt(0)}}</a-avatar>
+                  </a-card-meta>
+                </a-card>
+              </router-link>
+            </a-col>
+        </a-row>
       </a-col>
     </a-row>
   </div>
 </template>
 
 <script>
-import searchCard from "../components/Card";
 import appCarousel from "vue-owl-carousel";
 
 export default {
   components: {
-    searchCard,
     appCarousel
   },
   data() {
@@ -62,15 +85,21 @@ export default {
   },
   computed: {
     getTopTracks() {
-      //   console.log(this.$store.getters.getTopTracks)
-      this.$data.tracks = this.$store.getters.getTopTracks;
       return this.$store.getters.getTopTracks;
+    },
+    getSearchTracks() {
+      return this.$store.getters.getSearchTracks
+    }
+  },
+  methods: {
+    setTracks() {
+      this.tracks = this.getSearchTracks
     }
   }
 };
 </script>
 
-<style scoped>
+<style>
 h2 {
   text-align: center;
   font-weight: 500;
@@ -107,5 +136,16 @@ h2 {
   top: 14px;
   left: 14px;
   font-size: 20px;
+}
+.genre {
+  position: absolute;
+  top: 121px;
+  left: 0;
+  background: #ee3723;
+  padding: 3px 10px;
+  color: white;
+}
+.ant-card-meta-detail > div:not(:last-child) {
+  margin-bottom: -5px !important;
 }
 </style>

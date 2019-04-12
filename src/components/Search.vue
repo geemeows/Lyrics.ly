@@ -12,6 +12,7 @@
             size="large"
             placeholder="Which track you want?"
             @search="onSearch"
+            v-model="search"
           />
         </div>
       </a-col>
@@ -22,11 +23,17 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      search: ''
+    };
   },
   methods: {
     onSearch(value) {
-      console.log(value);
+      this.$store.dispatch('setSearchTracks', value)
+      this.search = ''
+      if(this.$route.name == 'lyrics') {
+        this.$router.push('/')
+      }
     }
   }
 };

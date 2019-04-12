@@ -2,19 +2,19 @@
   <a-layout style="margin-top: 25px; padding: 0 40px">
     <a-row type="flex" justify="space-around" style="padding: 0 40px">
       <a-col :xs="{span: 24}" :lg="{span: 16}">
-        <h2>Track Title</h2>
-        <span class="author">Author</span>
+        <h2>{{trackTitle}}</h2>
+        <span class="author">{{author}}</span>
         <p
           class="lyrics"
         >{{ getLyrics }}</p>
       </a-col>
       <a-col :xs="{span: 24}" :lg="{span: 8}">
         <h3>Tracks you may like</h3>
-        <a-list itemLayout="horizontal" :dataSource="listItems">
+        <a-list itemLayout="horizontal" :dataSource="getTopTracks">
           <a-list-item slot="renderItem" slot-scope="item, index">
-            <a-list-item-meta description="Author">
-              <a slot="title" href="https://vue.ant.design/">{{item.title}}</a>
-              <a-avatar slot="avatar" style="color: #f56a00; backgroundColor: #fde3cf">U</a-avatar>
+            <a-list-item-meta :description="item.artistName">
+              <a slot="title" href="#">{{item.trackName}}</a>
+              <a-avatar slot="avatar" style="color: #f56a00; backgroundColor: #fde3cf">{{item.artistName.charAt(0)}}</a-avatar>
             </a-list-item-meta>
           </a-list-item>
         </a-list>
@@ -28,23 +28,8 @@ export default {
   data() {
     return {
       trackID: this.$route.params.track_id,
-      listItems: [
-        {
-          title: "Track Title 1"
-        },
-        {
-          title: "Track Title 2"
-        },
-        {
-          title: "Track Title 3"
-        },
-        {
-          title: "Track Title 4"
-        },
-        {
-          title: "Track Title 5"
-        }
-      ]
+      trackTitle: this.$route.query.trackName,
+      author: this.$route.query.artistName
     };
   },
   watch: {
@@ -58,6 +43,9 @@ export default {
   computed: {
       getLyrics() {
           return this.$store.getters.getLyrics
+      },
+      getTopTracks() {
+        return this.$store.getters.getTopTracks
       }
   }
 };
@@ -66,6 +54,7 @@ export default {
 <style scoped>
 h2 {
   font-weight: 500;
+  text-align: left;
   font-size: 30px;
   margin-top: 20px !important;
   margin-bottom: 0;
