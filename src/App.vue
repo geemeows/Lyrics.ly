@@ -1,31 +1,20 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <a-layout>
+    <app-search></app-search>
+    <router-view></router-view>
+    <a-layout-footer style="textAlign: center">Made with <a-icon type="heart" theme="filled"/> and <a href="#">Vue.js</a></a-layout-footer>
+  </a-layout>
 </template>
+<script>
+import appSearch from "./components/Search";
 
+export default {
+  components: {
+    appSearch
+  }
+};
+</script>
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
+
