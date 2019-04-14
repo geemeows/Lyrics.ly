@@ -13,11 +13,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home,
-      beforeEnter: (to, from, next) => {
-        Store.dispatch('setTopTracks')
-        next()
-      }
+      component: Home
     },
     {
       path: '/lyrics/:track_id',

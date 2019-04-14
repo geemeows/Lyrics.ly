@@ -5,13 +5,15 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "node ./node_modules/vue-gh-pages/index.js"
   },
   "dependencies": {
     "ant-design-vue": "^1.3.8",
     "axios": "^0.18.0",
     "core-js": "^2.6.5",
     "vue": "^2.6.6",
+    "vue-gh-pages": "^1.19.0",
     "vue-owl-carousel": "^2.0.3",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
@@ -45,6 +47,7 @@
       "autoprefixer": {}
     }
   },
+  "homepage": "https://github.com/Gazouly/Lyrics.ly",
   "browserslist": [
     "> 1%",
     "last 2 versions",

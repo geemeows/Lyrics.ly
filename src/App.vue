@@ -15,6 +15,10 @@ export default {
 };
 </script>
 <style>
-
+  .spin-content{
+    border: 1px solid rgba(253, 110, 70, 0.3);
+    background-color: linear-gradient(360deg,rgba(253, 110, 70, 0.8) 10%,rgba(251, 150, 50, 0.7) 360%);
+    padding: 30px;
+  }
 </style>
 
