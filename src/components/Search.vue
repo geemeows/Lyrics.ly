@@ -1,7 +1,9 @@
 <template>
   <div id="search">
     <div class="logo">
-      <router-link to="/"><img src="../assets/logo.png" alt="app_logo" width="180"></router-link>
+      <router-link to="/">
+        <img src="../assets/logo.png" alt="app_logo" width="180">
+      </router-link>
     </div>
     <a-row type="flex" justify="space-around" align="middle">
       <a-col>
@@ -21,19 +23,23 @@
 </template>
 
 <script>
+import axios from "axios";
+import { eventBus } from "../main.js";
 export default {
   data() {
     return {
-      search: ''
+      search: "",
+      apiKey: "bff837ad705a5f43d18e5e69c8a98269"
     };
   },
   methods: {
     onSearch(value) {
-      this.$store.dispatch('setSearchTracks', value)
-      this.search = ''
-      if(this.$route.name == 'lyrics') {
-        this.$router.push('/')
+      if (this.$route.name == "lyrics") {
+        this.$router.push("/");
       }
+      eventBus.$emit("searchResults", value);
+
+      this.search = "";
     }
   }
 };
@@ -85,7 +91,7 @@ export default {
 /* Tablets */
 @media (min-width: 768px) and (max-width: 1024px) {
   #search {
-    height: 40vh;
+    height: 50vh;
   }
   .header {
     margin-top: 90px;
@@ -110,6 +116,9 @@ export default {
 }
 /* Mobile */
 @media (min-width: 320px) and (max-width: 480px) {
+    #search {
+    height: 60vh;
+  }
   .header {
     margin-top: 90px;
   }
