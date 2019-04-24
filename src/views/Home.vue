@@ -201,15 +201,14 @@ export default {
         }
       })
       .catch(err => console.log(err));
-  
-  
   },
   data() {
     return {
       apiKey: "bff837ad705a5f43d18e5e69c8a98269",
       topTracks: [],
       searchTracks: [],
-      searchLoading: false
+      searchLoading: false,
+      searchString: this.$route.query.search
     };
   },
   computed: {
@@ -217,7 +216,36 @@ export default {
       return this.$store.getters.getSearchTracks;
     }
   },
-  methods: {}
+  watch: {
+    searchString: function() {
+      console.log("changed")
+    }
+  },
+  methods: {
+    doSearch(resTracks) {
+      let tracks = [];
+      for (let i = 0; i < resTracks.length; i++) {
+        if (resTracks[i].track.primary_genres.music_genre_list.length != 0) {
+          tracks.push({
+            trackName: resTracks[i].track.track_name,
+            artistName: resTracks[i].track.artist_name,
+            trackID: resTracks[i].track.track_id,
+            genre:
+              resTracks[i].track.primary_genres.music_genre_list[0].music_genre
+                .music_genre_name
+          });
+        } else {
+          tracks.push({
+            trackName: resTracks[i].track.track_name,
+            artistName: resTracks[i].track.artist_name,
+            trackID: resTracks[i].track.track_id,
+            genre: "No Genre"
+          });
+        }
+      }
+      return tracks;
+    }
+  }
 };
 </script>
 
@@ -244,15 +272,16 @@ h2 {
 .next {
   right: -6px;
   opacity: 0.6;
-  transition: opacity 0.3s
+  transition: opacity 0.3s;
 }
 .prev {
   left: -20px;
   opacity: 0.6;
-  transition: opacity 0.3s
+  transition: opacity 0.3s;
 }
-.prev:hover, .next:hover {
-  opacity: 1
+.prev:hover,
+.next:hover {
+  opacity: 1;
 }
 .arrow-right {
   position: absolute;
@@ -278,7 +307,8 @@ h2 {
   margin-bottom: -5px !important;
 }
 @media (min-width: 320px) and (max-width: 480px) {
-  .prev, .next {
+  .prev,
+  .next {
     display: none !important;
   }
 }
