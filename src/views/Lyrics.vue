@@ -2,9 +2,43 @@
   <a-layout style="margin-top: 25px; padding: 0 40px">
     <a-row type="flex" justify="space-around" style="padding: 0 40px">
       <a-col :xs="{span: 24}" :lg="{span: 16}">
-        <h2>{{trackTitle}}</h2>
-        <span class="author">{{author}}</span>
-        <a-spin v-if = "lyrics == ''" tip="Fetching Lyrics...">
+        <a-row>
+          <a-col :xs="{span: 24}" :lg="{span: 16}">
+            <h2>{{trackTitle}}</h2>
+            <span class="author">{{author}}</span>
+          </a-col>
+          <a-col :xs="{span: 24}" :lg="{span: 8}">
+            <social-sharing
+              :url="'https://lyricsly.netlify.com'"
+              :title="'Check out ' + trackTitle + ' lyrics on lyrics.ly app. Just open the app and search for the track you want'"
+              :description="trackTitle + ' Lyrics on Lyrics.ly app is available now'"
+              quote="No quote"
+              hashtags="lyrics,lyrics.ly"
+              twitter-user="iGazouly"
+              inline-template
+            >
+              <div class="share">
+                <network network="email">
+                  <i class="fas fa-envelope-open-text"></i>
+                </network>
+                <network network="facebook">
+                  <i class="fab fa-facebook-square"></i>
+                </network>
+                <network network="sms">
+                  <i class="fas fa-sms"></i>
+                </network>
+                <network network="twitter">
+                  <i class="fab fa-twitter-square"></i>
+                </network>
+                <network network="whatsapp">
+                  <i class="fab fa-whatsapp-square"></i>
+                </network>
+              </div>
+            </social-sharing>
+          </a-col>
+        </a-row>
+
+        <a-spin v-if="lyrics == ''" tip="Fetching Lyrics...">
           <div class="spin-content">Getting lyrics from the server。。。</div>
         </a-spin>
         <p v-else class="lyrics">{{ lyrics }}</p>
@@ -29,7 +63,7 @@
 
 <script>
 import axios from "axios";
-import { eventBus } from '../main';
+import { eventBus } from "../main";
 export default {
   data() {
     return {
@@ -47,6 +81,7 @@ export default {
     }
   },
   created() {
+    console.log(this.$route.fullPath);
     // Getting Lyrics
     axios
       .get(
@@ -57,8 +92,8 @@ export default {
       })
       .catch(err => console.log(err));
 
-      // Getting Top 5 in UK
-          axios
+    // Getting Top 5 in UK
+    axios
       .get(
         "chart.tracks.get?chart_name=top&page=1&page_size=5&country=uk&f_has_lyrics=1&apikey=" +
           this.apiKey
@@ -90,7 +125,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.share span i {
+  font-size: 30px;
+  padding: 0 5px;
+  cursor: pointer;
+}
+.share {
+    margin-top: 25px !important;
+}
 h2 {
   font-weight: 500;
   text-align: left;
@@ -109,7 +152,7 @@ h3 {
 .lyrics {
   margin-top: 20px;
   padding-right: 60px;
-    text-align: justify
+  text-align: justify;
 }
 .ant-list-item-meta-title {
   margin-bottom: 0 !important;
@@ -119,7 +162,7 @@ h3 {
 }
 @media (min-width: 320px) and (max-width: 480px) {
   .lyrics {
-  padding-right: 0;
-}
+    padding-right: 0;
+  }
 }
 </style>

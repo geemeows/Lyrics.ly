@@ -34,10 +34,11 @@ export default {
   },
   methods: {
     onSearch(value) {
-      if (this.$route.name == "lyrics") {
-        this.$router.push("/");
-      }
-      eventBus.$emit("searchResults", value);
+      // if (this.$route.name == "lyrics") {
+        this.$router.push({ path: "/", query: { search: value } });
+      // } else {
+      //   eventBus.$emit("searchResults", value);
+      // }
 
       this.search = "";
     }
@@ -116,7 +117,7 @@ export default {
 }
 /* Mobile */
 @media (min-width: 320px) and (max-width: 480px) {
-    #search {
+  #search {
     height: 60vh;
   }
   .header {

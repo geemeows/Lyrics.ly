@@ -132,45 +132,77 @@ export default {
     appCarousel
   },
   created() {
+
     // Search Results
-    eventBus.$on("searchResults", trackTitle => {
-      this.searchLoading = true
-      let tracks = [];
+    if (this.searchString != "" && this.searchString != undefined) {
       axios
         .get(
           "track.search?q_track=" +
-            trackTitle +
+            this.searchString  +
             "&page_size=12&page=1&s_track_rating=desc&apikey=" +
             this.apiKey
         )
         .then(res => {
           let resTracks = res.data.message.body.track_list;
-          for (let i = 0; i < resTracks.length; i++) {
-            if (
-              resTracks[i].track.primary_genres.music_genre_list.length != 0
-            ) {
-              tracks.push({
-                trackName: resTracks[i].track.track_name,
-                artistName: resTracks[i].track.artist_name,
-                trackID: resTracks[i].track.track_id,
-                genre:
-                  resTracks[i].track.primary_genres.music_genre_list[0]
-                    .music_genre.music_genre_name
-              });
-            } else {
-              tracks.push({
-                trackName: resTracks[i].track.track_name,
-                artistName: resTracks[i].track.artist_name,
-                trackID: resTracks[i].track.track_id,
-                genre: "No Genre"
-              });
-            }
-          }
-          this.searchLoading = false
+          this.searchTracks = this.doSearch(resTracks);
+          this.searchLoading = false;
         })
         .catch(err => console.log(err));
-      this.searchTracks = tracks;
-    });
+    } else {
+      eventBus.$on("searchResults", trackTitle => {
+        this.searchLoading = true;
+        axios
+          .get(
+            "track.search?q_track=" +
+              trackTitle +
+              "&page_size=12&page=1&s_track_rating=desc&apikey=" +
+              this.apiKey
+          )
+          .then(res => {
+            let resTracks = res.data.message.body.track_list;
+            this.searchTracks = this.doSearch(resTracks);
+            this.searchLoading = false;
+          })
+          .catch(err => console.log(err));
+      });
+    }
+
+    // this.searchLoading = true
+    // axios
+    //   .get(
+    //     "track.search?q_track=" +
+    //       this.$router.query.search +
+    //       "&page_size=12&page=1&s_track_rating=desc&apikey=" +
+    //       this.apiKey
+    //   )
+    //   .then(res => {
+    //     let tracks = [];
+    //     let resTracks = res.data.message.body.track_list;
+    //     for (let i = 0; i < resTracks.length; i++) {
+    //       if (
+    //         resTracks[i].track.primary_genres.music_genre_list.length != 0
+    //       ) {
+    //         tracks.push({
+    //           trackName: resTracks[i].track.track_name,
+    //           artistName: resTracks[i].track.artist_name,
+    //           trackID: resTracks[i].track.track_id,
+    //           genre:
+    //             resTracks[i].track.primary_genres.music_genre_list[0]
+    //               .music_genre.music_genre_name
+    //         });
+    //       } else {
+    //         tracks.push({
+    //           trackName: resTracks[i].track.track_name,
+    //           artistName: resTracks[i].track.artist_name,
+    //           trackID: resTracks[i].track.track_id,
+    //           genre: "No Genre"
+    //         });
+    //       }
+    //     }
+    //     this.searchLoading = false
+    //   })
+    //   .catch(err => console.log(err));
+    // this.searchTracks = tracks;
 
     // Top 10 Tracks in US
     axios
@@ -201,15 +233,14 @@ export default {
         }
       })
       .catch(err => console.log(err));
-  
-  
   },
   data() {
     return {
       apiKey: "bff837ad705a5f43d18e5e69c8a98269",
       topTracks: [],
       searchTracks: [],
-      searchLoading: false
+      searchLoading: false,
+      searchString: this.$route.query.search
     };
   },
   computed: {
@@ -217,7 +248,36 @@ export default {
       return this.$store.getters.getSearchTracks;
     }
   },
-  methods: {}
+  watch: {
+    searchString: function() {
+      console.log("changed")
+    }
+  },
+  methods: {
+    doSearch(resTracks) {
+      let tracks = [];
+      for (let i = 0; i < resTracks.length; i++) {
+        if (resTracks[i].track.primary_genres.music_genre_list.length != 0) {
+          tracks.push({
+            trackName: resTracks[i].track.track_name,
+            artistName: resTracks[i].track.artist_name,
+            trackID: resTracks[i].track.track_id,
+            genre:
+              resTracks[i].track.primary_genres.music_genre_list[0].music_genre
+                .music_genre_name
+          });
+        } else {
+          tracks.push({
+            trackName: resTracks[i].track.track_name,
+            artistName: resTracks[i].track.artist_name,
+            trackID: resTracks[i].track.track_id,
+            genre: "No Genre"
+          });
+        }
+      }
+      return tracks;
+    }
+  }
 };
 </script>
 
@@ -244,15 +304,16 @@ h2 {
 .next {
   right: -6px;
   opacity: 0.6;
-  transition: opacity 0.3s
+  transition: opacity 0.3s;
 }
 .prev {
   left: -20px;
   opacity: 0.6;
-  transition: opacity 0.3s
+  transition: opacity 0.3s;
 }
-.prev:hover, .next:hover {
-  opacity: 1
+.prev:hover,
+.next:hover {
+  opacity: 1;
 }
 .arrow-right {
   position: absolute;
@@ -278,7 +339,8 @@ h2 {
   margin-bottom: -5px !important;
 }
 @media (min-width: 320px) and (max-width: 480px) {
-  .prev, .next {
+  .prev,
+  .next {
     display: none !important;
   }
 }
