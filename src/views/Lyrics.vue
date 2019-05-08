@@ -4,33 +4,33 @@
       <a-col :xs="{span: 24}" :lg="{span: 16}">
         <a-row>
           <a-col :xs="{span: 24}" :lg="{span: 16}">
-            <h2>{{trackTitle}}</h2>
+            <h2 class="trackTitle">{{trackTitle}}</h2>
             <span class="author">{{author}}</span>
           </a-col>
           <a-col :xs="{span: 24}" :lg="{span: 8}">
             <social-sharing
-              :url="'https://lyricsly.netlify.com'"
-              :title="'Check out ' + trackTitle + ' lyrics on lyrics.ly app. Just open the app and search for the track you want'"
-              :description="trackTitle + ' Lyrics on Lyrics.ly app is available now'"
+              :url="`https://lyricsly.netlify.com${$route.fullPath}`"
+              :title="`Check out ${trackTitle} lyrics on lyrics.ly app. Just open the app and search for the track you want`"
+              :description="`${trackTitle} Lyrics on Lyrics.ly app is available now`"
               quote="No quote"
               hashtags="lyrics,lyrics.ly"
               twitter-user="iGazouly"
               inline-template
             >
               <div class="share">
-                <network network="email">
+                <network class="network" network="email">
                   <i class="fas fa-envelope-open-text"></i>
                 </network>
-                <network network="facebook">
+                <network class="network" network="facebook">
                   <i class="fab fa-facebook-square"></i>
                 </network>
-                <network network="sms">
+                <network class="network" network="sms">
                   <i class="fas fa-sms"></i>
                 </network>
-                <network network="twitter">
+                <network class="network" network="twitter">
                   <i class="fab fa-twitter-square"></i>
                 </network>
-                <network network="whatsapp">
+                <network class="network" network="whatsapp">
                   <i class="fab fa-whatsapp-square"></i>
                 </network>
               </div>
@@ -44,9 +44,9 @@
         <p v-else class="lyrics">{{ lyrics }}</p>
       </a-col>
       <a-col :xs="{span: 24}" :lg="{span: 8}">
-        <h3>Top Tracks in UK</h3>
+        <h3 class="topUKTracks">Top Tracks in UK</h3>
         <a-list itemLayout="horizontal" :dataSource="topTracks">
-          <a-list-item slot="renderItem" slot-scope="item, index">
+          <a-list-item slot="renderItem" slot-scope="item">
             <a-list-item-meta :description="item.artistName">
               <a slot="title" href="#">{{item.trackName}}</a>
               <a-avatar
@@ -62,46 +62,39 @@
 </template>
 
 <script>
-import axios from "axios";
-import { eventBus } from "../main";
+import axios from 'axios'
 export default {
-  data() {
+  data () {
     return {
-      apiKey: "bff837ad705a5f43d18e5e69c8a98269",
+      apiKey: 'bff837ad705a5f43d18e5e69c8a98269',
       trackID: this.$route.params.track_id,
       trackTitle: this.$route.query.trackName,
       author: this.$route.query.artistName,
-      lyrics: "",
+      lyrics: '',
       topTracks: []
-    };
-  },
-  watch: {
-    $route(to, from) {
-      this.trackID = to.params.track_id;
     }
   },
-  created() {
-    console.log(this.$route.fullPath);
+  created () {
     // Getting Lyrics
     axios
       .get(
-        "track.lyrics.get?track_id=" + this.trackID + "&apikey=" + this.apiKey
+        'track.lyrics.get?track_id=' + this.trackID + '&apikey=' + this.apiKey
       )
       .then(res => {
-        this.lyrics = res.data.message.body.lyrics.lyrics_body;
+        this.lyrics = res.data.message.body.lyrics.lyrics_body
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
 
     // Getting Top 5 in UK
     axios
       .get(
-        "chart.tracks.get?chart_name=top&page=1&page_size=5&country=uk&f_has_lyrics=1&apikey=" +
+        'chart.tracks.get?chart_name=top&page=1&page_size=5&country=uk&f_has_lyrics=1&apikey=' +
           this.apiKey
       )
       .then(res => {
-        let resTracks = res.data.message.body.track_list;
+        let resTracks = res.data.message.body.track_list
         for (let i = 0; i < resTracks.length; i++) {
-          if (resTracks[i].track.primary_genres.music_genre_list.length != 0) {
+          if (resTracks[i].track.primary_genres.music_genre_list.length !== 0) {
             this.topTracks.push({
               trackName: resTracks[i].track.track_name,
               artistName: resTracks[i].track.artist_name,
@@ -109,39 +102,40 @@ export default {
               genre:
                 resTracks[i].track.primary_genres.music_genre_list[0]
                   .music_genre.music_genre_name
-            });
+            })
           } else {
             this.topTracks.push({
               trackName: resTracks[i].track.track_name,
               artistName: resTracks[i].track.artist_name,
               trackID: resTracks[i].track.track_id,
-              genre: "No Genre"
-            });
+              genre: 'No Genre'
+            })
           }
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
   }
-};
+}
 </script>
 
-<style>
-.share span i {
-  font-size: 30px;
-  padding: 0 5px;
-  cursor: pointer;
+<style scoped>
+
+.share >>> .network{
+  font-size: 30px !important;
+  padding: 0 5px !important;
+  cursor: pointer !important;
 }
 .share {
     margin-top: 25px !important;
 }
-h2 {
+h2.trackTitle {
   font-weight: 500;
   text-align: left;
   font-size: 30px;
   margin-top: 20px !important;
   margin-bottom: 0;
 }
-h3 {
+h3.topUKTracks {
   font-weight: 500;
   font-size: 20px;
   margin-top: 20px !important;
@@ -153,6 +147,7 @@ h3 {
   margin-top: 20px;
   padding-right: 60px;
   text-align: justify;
+  white-space: pre-wrap;
 }
 .ant-list-item-meta-title {
   margin-bottom: 0 !important;

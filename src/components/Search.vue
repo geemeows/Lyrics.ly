@@ -23,31 +23,24 @@
 </template>
 
 <script>
-import axios from "axios";
-import { eventBus } from "../main.js";
 export default {
-  data() {
+  data () {
     return {
-      search: "",
-      apiKey: "bff837ad705a5f43d18e5e69c8a98269"
-    };
+      search: '',
+      apiKey: 'bff837ad705a5f43d18e5e69c8a98269'
+    }
   },
   methods: {
-    onSearch(value) {
-      // if (this.$route.name == "lyrics") {
-        this.$router.push({ path: "/", query: { search: value } });
-      // } else {
-      //   eventBus.$emit("searchResults", value);
-      // }
-
-      this.search = "";
+    onSearch (value) {
+      this.$router.push({ path: '/', query: { search: value } })
+      this.search = ''
     }
   }
-};
+}
 </script>
 
-<style>
-#search {
+<style scoped>
+#search /deep/ {
   height: 50vh;
   background-image: linear-gradient(
       360deg,
@@ -61,22 +54,22 @@ export default {
   background-position: center center;
   position: relative;
 }
-.logo {
+.logo{
   padding: 20px;
 }
 
 /*Media Query*/
 /* Desktop and Laptops */
 @media (min-width: 1281px) {
-  .header {
+  .header{
     margin-top: 50px;
   }
-  .header h1 {
+  .header h1{
     font-size: 50px;
     font-weight: 500;
     color: white;
   }
-  .search-input {
+  .search-input{
     width: 700px !important;
     height: 60px !important;
     margin: 0 50px !important;
@@ -84,14 +77,14 @@ export default {
   .ant-input-lg {
     font-size: 22px !important;
   }
-  .ant-input-search-icon.anticon.anticon-search {
+  .ant-input-search-icon.anticon.anticon-search{
     font-size: 25px !important;
   }
 }
 
 /* Tablets */
 @media (min-width: 768px) and (max-width: 1024px) {
-  #search {
+  #search /deep/{
     height: 50vh;
   }
   .header {
@@ -117,7 +110,7 @@ export default {
 }
 /* Mobile */
 @media (min-width: 320px) and (max-width: 480px) {
-  #search {
+  #search /deep/{
     height: 60vh;
   }
   .header {

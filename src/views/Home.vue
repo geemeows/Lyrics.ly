@@ -1,9 +1,9 @@
 <template>
   <div style="margin-bottom: 20px">
-    <h2>TOP 10 SINGLES CHART IN US</h2>
+    <h2 class="heading-2">TOP 10 SINGLES CHART IN US</h2>
     <a-row type="flex" justify="space-around" align="middle" style="padding: 0 40px">
-      <!-- Top 10 Charts in US -->
       <a-col :xs="{span: 24}">
+        <!-- Top 10 Charts in US Loader -->
         <a-row v-if="topTracks.length == 0">
           <a-col>
             <a-spin tip="Fetching Data...">
@@ -29,7 +29,8 @@
             </a-spin>
           </a-col>
         </a-row>
-        <a-row v-if="topTracks.length != 0">
+        <!-- Top 10 Charts in US -->
+        <a-row v-if="topTracks.length !== 0">
           <app-carousel
             :autoplay="true"
             :nav="false"
@@ -42,22 +43,19 @@
                 <a-icon type="left" class="arrow-left"/>
               </div>
             </template>
-            <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(item,i) in 10" :key="i">
+            <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(track,i) in topTracks" :key="i">
               <router-link
-                v-if="topTracks.length != 0"
-                :to="{name: 'lyrics', params: {track_id: topTracks[i].trackID}, query: {trackName: topTracks[i].trackName, artistName: topTracks[i].artistName}}"
+                v-if="topTracks.length !== 0"
+                :to="{name: 'lyrics', params: {track_id: track.trackID}, query: {trackName: track.trackName, artistName: track.artistName}}"
               >
                 <a-card hoverable style="width: 300px">
                   <img alt="example" src="../assets/card-img.png" slot="cover">
-                  <div class="genre">{{topTracks[i].genre}}</div>
-                  <a-card-meta
-                    :title="topTracks[i].trackName"
-                    :description="topTracks[i].artistName"
-                  >
+                  <div class="genre">{{track.genre}}</div>
+                  <a-card-meta :title="track.trackName" :description="track.artistName">
                     <a-avatar
                       slot="avatar"
                       style="color: #f56a00; backgroundColor: #fde3cf"
-                    >{{topTracks[i].artistName.charAt(0)}}</a-avatar>
+                    >{{track.artistName.charAt(0)}}</a-avatar>
                   </a-card-meta>
                 </a-card>
               </router-link>
@@ -70,6 +68,7 @@
           </app-carousel>
         </a-row>
 
+        <!-- Search Loader -->
         <a-row v-if="searchLoading">
           <a-col>
             <a-spin tip="Fetching Data...">
@@ -95,23 +94,27 @@
             </a-spin>
           </a-col>
         </a-row>
-        <a-row v-if="searchTracks.length != 0">
-          <h2>Search Results</h2>
-          <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(item,i) in 12" :key="i">
+        <!-- Search Results -->
+        <a-row v-if="searchTracks.length !== 0">
+          <h2 class="heading-2">
+            Search Results for
+            <span class="searchQuery">{{ $route.query.search }}</span>
+          </h2>
+          <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(track,i) in searchTracks" :key="i">
             <router-link
-              :to="{name: 'lyrics', params: {track_id: searchTracks[i].trackID}, query: {trackName: searchTracks[i].trackName, artistName: searchTracks[i].artistName}}"
+              :to="{name: 'lyrics', params: {track_id: track.trackID}, query: {trackName: track.trackName, artistName: track.artistName}}"
             >
               <a-card hoverable style="width: 300px; margin-bottom: 15px">
                 <img alt="example" src="../assets/card-img.png" slot="cover">
-                <div class="genre">{{searchTracks[i].genre}}</div>
+                <div class="genre">{{track.genre}}</div>
                 <a-card-meta
-                  :title="searchTracks[i].trackName"
-                  :description="searchTracks[i].artistName.substring(0,25)"
+                  :title="track.trackName"
+                  :description="track.artistName.substring(0,25)"
                 >
                   <a-avatar
                     slot="avatar"
                     style="color: #f56a00; backgroundColor: #fde3cf"
-                  >{{searchTracks[i].artistName.charAt(0)}}</a-avatar>
+                  >{{track.artistName.charAt(0)}}</a-avatar>
                 </a-card-meta>
               </a-card>
             </router-link>
@@ -123,166 +126,117 @@
 </template>
 
 <script>
-import appCarousel from "vue-owl-carousel";
-import axios from "axios";
-import { eventBus } from "../main.js";
+import appCarousel from 'vue-owl-carousel'
+import axios from 'axios'
 
 export default {
   components: {
     appCarousel
   },
-  created() {
-
-    // Search Results
-    if (this.searchString != "" && this.searchString != undefined) {
-      axios
-        .get(
-          "track.search?q_track=" +
-            this.searchString  +
-            "&page_size=12&page=1&s_track_rating=desc&apikey=" +
-            this.apiKey
-        )
-        .then(res => {
-          let resTracks = res.data.message.body.track_list;
-          this.searchTracks = this.doSearch(resTracks);
-          this.searchLoading = false;
-        })
-        .catch(err => console.log(err));
-    } else {
-      eventBus.$on("searchResults", trackTitle => {
-        this.searchLoading = true;
-        axios
-          .get(
-            "track.search?q_track=" +
-              trackTitle +
-              "&page_size=12&page=1&s_track_rating=desc&apikey=" +
-              this.apiKey
-          )
-          .then(res => {
-            let resTracks = res.data.message.body.track_list;
-            this.searchTracks = this.doSearch(resTracks);
-            this.searchLoading = false;
-          })
-          .catch(err => console.log(err));
-      });
-    }
-
-    // this.searchLoading = true
-    // axios
-    //   .get(
-    //     "track.search?q_track=" +
-    //       this.$router.query.search +
-    //       "&page_size=12&page=1&s_track_rating=desc&apikey=" +
-    //       this.apiKey
-    //   )
-    //   .then(res => {
-    //     let tracks = [];
-    //     let resTracks = res.data.message.body.track_list;
-    //     for (let i = 0; i < resTracks.length; i++) {
-    //       if (
-    //         resTracks[i].track.primary_genres.music_genre_list.length != 0
-    //       ) {
-    //         tracks.push({
-    //           trackName: resTracks[i].track.track_name,
-    //           artistName: resTracks[i].track.artist_name,
-    //           trackID: resTracks[i].track.track_id,
-    //           genre:
-    //             resTracks[i].track.primary_genres.music_genre_list[0]
-    //               .music_genre.music_genre_name
-    //         });
-    //       } else {
-    //         tracks.push({
-    //           trackName: resTracks[i].track.track_name,
-    //           artistName: resTracks[i].track.artist_name,
-    //           trackID: resTracks[i].track.track_id,
-    //           genre: "No Genre"
-    //         });
-    //       }
-    //     }
-    //     this.searchLoading = false
-    //   })
-    //   .catch(err => console.log(err));
-    // this.searchTracks = tracks;
-
-    // Top 10 Tracks in US
-    axios
-      .get(
-        "chart.tracks.get?chart_name=top&page=1&page_size=10&country=us&f_has_lyrics=1&apikey=" +
-          this.apiKey
-      )
-      .then(res => {
-        let resTracks = res.data.message.body.track_list;
-        for (let i = 0; i < resTracks.length; i++) {
-          if (resTracks[i].track.primary_genres.music_genre_list.length != 0) {
-            this.topTracks.push({
-              trackName: resTracks[i].track.track_name,
-              artistName: resTracks[i].track.artist_name,
-              trackID: resTracks[i].track.track_id,
-              genre:
-                resTracks[i].track.primary_genres.music_genre_list[0]
-                  .music_genre.music_genre_name
-            });
-          } else {
-            this.topTracks.push({
-              trackName: resTracks[i].track.track_name,
-              artistName: resTracks[i].track.artist_name,
-              trackID: resTracks[i].track.track_id,
-              genre: "No Genre"
-            });
-          }
-        }
-      })
-      .catch(err => console.log(err));
+  created () {
+    this.getTopTracks('us')
   },
-  data() {
+  data () {
     return {
-      apiKey: "bff837ad705a5f43d18e5e69c8a98269",
+      apiKey: 'bff837ad705a5f43d18e5e69c8a98269',
       topTracks: [],
       searchTracks: [],
-      searchLoading: false,
-      searchString: this.$route.query.search
-    };
-  },
-  computed: {
-    getSearchTracks() {
-      return this.$store.getters.getSearchTracks;
+      searchLoading: false
     }
   },
   watch: {
-    searchString: function() {
-      console.log("changed")
+    '$route.query.search': {
+      handler (payload) {
+        // Search here
+        this.doSearch(payload)
+      },
+      immediate: true
     }
   },
   methods: {
-    doSearch(resTracks) {
-      let tracks = [];
-      for (let i = 0; i < resTracks.length; i++) {
-        if (resTracks[i].track.primary_genres.music_genre_list.length != 0) {
-          tracks.push({
-            trackName: resTracks[i].track.track_name,
-            artistName: resTracks[i].track.artist_name,
-            trackID: resTracks[i].track.track_id,
-            genre:
-              resTracks[i].track.primary_genres.music_genre_list[0].music_genre
-                .music_genre_name
-          });
-        } else {
-          tracks.push({
-            trackName: resTracks[i].track.track_name,
-            artistName: resTracks[i].track.artist_name,
-            trackID: resTracks[i].track.track_id,
-            genre: "No Genre"
-          });
-        }
-      }
-      return tracks;
+    doSearch (payload) {
+      if (payload === null || payload === undefined) return
+      this.searchLoading = true
+      axios
+        .get('track.search', {
+          params: {
+            q_track: payload,
+            page_size: 12,
+            page: 1,
+            s_track_rating: 'desc',
+            apikey: this.apiKey
+          }
+        })
+        .then(res => {
+          let resTracks = res.data.message.body.track_list
+          // Extracting the data we need to display
+          this.searchTracks = resTracks.map(
+            ({
+              track: {
+                track_name: trackName,
+                artist_name: artistName,
+                track_id: trackID,
+                primary_genres: { music_genre_list: genreList }
+              }
+            }) => {
+              return {
+                trackName,
+                artistName,
+                trackID,
+                genre:
+                  genreList.length === 0
+                    ? 'No Genre'
+                    : genreList[0].music_genre.music_genre_name
+              }
+            }
+          )
+          this.searchLoading = false
+        })
+        .catch(err => console.log(err))
+    },
+    getTopTracks (country) {
+      axios
+        .get('chart.tracks.get', {
+          params: {
+            chart_name: 'top',
+            page: 1,
+            page_size: 10,
+            country,
+            f_has_lyrics: 1,
+            apikey: this.apiKey
+          }
+        })
+        .then(res => {
+          let resTracks = res.data.message.body.track_list
+          this.topTracks = resTracks.map(
+            ({
+              track: {
+                track_name: trackName,
+                artist_name: artistName,
+                track_id: trackID,
+                primary_genres: { music_genre_list: genreList }
+              }
+            }) => {
+              return {
+                trackName,
+                artistName,
+                trackID,
+                genre:
+                  genreList.length === 0
+                    ? 'No Genre'
+                    : genreList[0].music_genre.music_genre_name
+              }
+            }
+          )
+        })
+        .catch(err => console.log(err))
     }
   }
-};
+}
 </script>
 
-<style>
-h2 {
+<style scoped>
+h2.heading-2 {
   text-align: center;
   font-weight: 500;
   font-size: 30px;
@@ -334,6 +288,9 @@ h2 {
   background: #ee3723;
   padding: 3px 10px;
   color: white;
+}
+.searchQuery {
+  color: #ee3723;
 }
 .ant-card-meta-detail > div:not(:last-child) {
   margin-bottom: -5px !important;
