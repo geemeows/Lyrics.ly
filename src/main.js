@@ -19,7 +19,10 @@ Vue.use(Antd)
 Vue.use(socialShare)
 
 Vue.config.productionTip = false
-axios.defaults.baseURL = 'https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/'
+axios.defaults.baseURL = 'https://api.musixmatch.com/ws/1.1/'
+axios.defaults.params = {
+  apikey: 'bff837ad705a5f43d18e5e69c8a98269'
+}
 
 export const eventBus = new Vue()
 
