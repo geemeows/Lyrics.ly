@@ -8,67 +8,32 @@
           <a-col>
             <a-spin tip="Fetching Data...">
               <div class="spin-content">
-                <a-row>
-                  <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(item,i) in 4" :key="i">
-                    <a href="#">
-                      <a-card hoverable style="width: 300px" :loading="true">
-                        <img
-                          alt="example"
-                          src="http://www.clipartroo.com/images/69/mountains-animated-gifs-animated-clipart-69683.gif"
-                          slot="cover"
-                        >
-                        <div class="genre">Genre</div>
-                        <a-card-meta title="Track Title" description="Author">
-                          <a-avatar slot="avatar" style="color: #f56a00; backgroundColor: #fde3cf">A</a-avatar>
-                        </a-card-meta>
-                      </a-card>
-                    </a>
-                  </a-col>
-                </a-row>
+                <spin-skeleton></spin-skeleton>
               </div>
             </a-spin>
           </a-col>
         </a-row>
-
         <!-- Top 10 Charts in US -->
         <a-row v-if="topTracks.length !== 0">
           <top-carousel :topTracks='topTracks'></top-carousel>
         </a-row>
-
         <!-- Search Loader -->
         <a-row v-if="searchLoading">
           <a-col>
             <a-spin tip="Fetching Data...">
               <div class="spin-content">
-                <a-row>
-                  <a-col :xs="{span: 24}" :lg="{span: 6}" v-for="(item,i) in 4" :key="i">
-                    <a href="#">
-                      <a-card hoverable style="width: 300px" :loading="true">
-                        <img
-                          alt="example"
-                          src="http://www.clipartroo.com/images/69/mountains-animated-gifs-animated-clipart-69683.gif"
-                          slot="cover"
-                        >
-                        <div class="genre">Genre</div>
-                        <a-card-meta title="Track Title" description="Author">
-                          <a-avatar slot="avatar" style="color: #f56a00; backgroundColor: #fde3cf">A</a-avatar>
-                        </a-card-meta>
-                      </a-card>
-                    </a>
-                  </a-col>
-                </a-row>
+                <spin-skeleton></spin-skeleton>
               </div>
             </a-spin>
           </a-col>
         </a-row>
-
         <!-- Search Results -->
-        <a-row v-if="searchTracks.length !== 0">
+        <a-row v-if="!searchLoading && searchTracks.length !== 0">
           <h2 class="heading-2">
             Search Results for
             <span class="searchQuery">{{ $route.query.search }}</span>
-            <search-results :searchTracks="searchTracks"></search-results>
           </h2>
+          <search-results :searchTracks="searchTracks"></search-results>
         </a-row>
       </a-col>
     </a-row>
@@ -76,17 +41,19 @@
 </template>
 
 <script>
-import TopCarousel from '../components/Carousel'
-import SearchResults from '../components/SearchResults'
-import axios from 'axios'
+import TopCarousel from '../components/Home/TopCarousel'
+import SearchResults from '../components/Home/SearchResults'
+import SpinSkeleton from '../components/Home/SpinSkeleton'
+import { getTopTracks, searchForTrack } from '../../core/tracks/tracks.services'
 
 export default {
   components: {
     TopCarousel,
-    SearchResults
+    SearchResults,
+    SpinSkeleton
   },
   created () {
-    this.getTopTracks('us')
+    this.fetchTopTracks()
   },
   data () {
     return {
@@ -98,7 +65,6 @@ export default {
   watch: {
     '$route.query.search': {
       handler (payload) {
-        // Search here
         this.doSearch(payload)
       },
       immediate: true
@@ -108,75 +74,17 @@ export default {
     doSearch (payload) {
       if (payload === null || payload === undefined) return
       this.searchLoading = true
-      axios
-        .get('track.search', {
-          params: {
-            q_track: payload,
-            page_size: 12,
-            page: 1,
-            s_track_rating: 'desc'
-          }
-        })
+      searchForTrack(payload)
         .then(res => {
-          let resTracks = res.data.message.body.track_list
-          // Extracting the data we need to display
-          this.searchTracks = resTracks.map(
-            ({
-              track: {
-                track_name: trackName,
-                artist_name: artistName,
-                track_id: trackID,
-                primary_genres: { music_genre_list: genreList }
-              }
-            }) => {
-              return {
-                trackName,
-                artistName,
-                trackID,
-                genre:
-                  genreList.length === 0
-                    ? 'No Genre'
-                    : genreList[0].music_genre.music_genre_name
-              }
-            }
-          )
+          this.searchTracks = res
           this.searchLoading = false
         })
         .catch(err => console.log(err))
     },
-    getTopTracks (country) {
-      axios
-        .get('chart.tracks.get', {
-          params: {
-            chart_name: 'top',
-            page: 1,
-            page_size: 10,
-            country,
-            f_has_lyrics: 1
-          }
-        })
+    fetchTopTracks () {
+      getTopTracks('us', 10)
         .then(res => {
-          let resTracks = res.data.message.body.track_list
-          this.topTracks = resTracks.map(
-            ({
-              track: {
-                track_name: trackName,
-                artist_name: artistName,
-                track_id: trackID,
-                primary_genres: { music_genre_list: genreList }
-              }
-            }) => {
-              return {
-                trackName,
-                artistName,
-                trackID,
-                genre:
-                  genreList.length === 0
-                    ? 'No Genre'
-                    : genreList[0].music_genre.music_genre_name
-              }
-            }
-          )
+          this.topTracks = res
         })
         .catch(err => console.log(err))
     }
