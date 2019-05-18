@@ -5,15 +5,21 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "node ./node_modules/vue-gh-pages/index.js"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.17",
+    "@fortawesome/free-solid-svg-icons": "^5.8.1",
+    "@fortawesome/vue-fontawesome": "^0.1.6",
     "ant-design-vue": "^1.3.8",
     "axios": "^0.18.0",
     "core-js": "^2.6.5",
     "vue": "^2.6.6",
+    "vue-gh-pages": "^1.19.0",
     "vue-owl-carousel": "^2.0.3",
     "vue-router": "^3.0.1",
+    "vue-social-sharing": "^2.4.3",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -45,6 +51,7 @@
       "autoprefixer": {}
     }
   },
+  "homepage": "https://github.com/Gazouly/Lyrics.ly",
   "browserslist": [
     "> 1%",
     "last 2 versions",

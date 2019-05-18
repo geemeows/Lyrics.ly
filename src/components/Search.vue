@@ -1,7 +1,9 @@
 <template>
   <div id="search">
     <div class="logo">
-      <router-link to="/"><img src="../assets/logo.png" alt="app_logo" width="180"></router-link>
+      <router-link to="/">
+        <img src="../assets/logo.png" alt="app_logo" width="180">
+      </router-link>
     </div>
     <a-row type="flex" justify="space-around" align="middle">
       <a-col>
@@ -22,25 +24,23 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
-      search: ''
-    };
+      search: '',
+      apiKey: 'bff837ad705a5f43d18e5e69c8a98269'
+    }
   },
   methods: {
-    onSearch(value) {
-      this.$store.dispatch('setSearchTracks', value)
+    onSearch (value) {
+      this.$router.push({ path: '/', query: { search: value } })
       this.search = ''
-      if(this.$route.name == 'lyrics') {
-        this.$router.push('/')
-      }
     }
   }
-};
+}
 </script>
 
-<style>
-#search {
+<style scoped>
+#search /deep/ {
   height: 50vh;
   background-image: linear-gradient(
       360deg,
@@ -54,22 +54,22 @@ export default {
   background-position: center center;
   position: relative;
 }
-.logo {
+.logo{
   padding: 20px;
 }
 
 /*Media Query*/
 /* Desktop and Laptops */
 @media (min-width: 1281px) {
-  .header {
+  .header{
     margin-top: 50px;
   }
-  .header h1 {
+  .header h1{
     font-size: 50px;
     font-weight: 500;
     color: white;
   }
-  .search-input {
+  .search-input{
     width: 700px !important;
     height: 60px !important;
     margin: 0 50px !important;
@@ -77,15 +77,15 @@ export default {
   .ant-input-lg {
     font-size: 22px !important;
   }
-  .ant-input-search-icon.anticon.anticon-search {
+  .ant-input-search-icon.anticon.anticon-search{
     font-size: 25px !important;
   }
 }
 
 /* Tablets */
 @media (min-width: 768px) and (max-width: 1024px) {
-  #search {
-    height: 40vh;
+  #search /deep/{
+    height: 50vh;
   }
   .header {
     margin-top: 90px;
@@ -110,6 +110,9 @@ export default {
 }
 /* Mobile */
 @media (min-width: 320px) and (max-width: 480px) {
+  #search /deep/{
+    height: 60vh;
+  }
   .header {
     margin-top: 90px;
   }
