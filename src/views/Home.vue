@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     doSearch (payload) {
-      if (payload === null || payload === undefined) return
+      if (!payload) return
       this.searchLoading = true
       searchForTrack(payload)
         .then(res => {
@@ -82,7 +82,7 @@ export default {
         .catch(err => console.log(err))
     },
     fetchTopTracks () {
-      getTopTracks('us', 10)
+      getTopTracks()
         .then(res => {
           this.topTracks = res
         })

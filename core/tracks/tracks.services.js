@@ -2,7 +2,7 @@ import musixHttp from '../httpClient'
 import { formatTracks } from './tracks.model'
 
 // Top Tracks
-export const getTopTracks = (country, size) => {
+export const getTopTracks = (country = 'us', size = 10) => {
   return musixHttp
     .get('chart.tracks.get', {
       params: {

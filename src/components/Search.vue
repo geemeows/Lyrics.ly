@@ -26,8 +26,7 @@
 export default {
   data () {
     return {
-      search: '',
-      apiKey: 'bff837ad705a5f43d18e5e69c8a98269'
+      search: ''
     }
   },
   methods: {
